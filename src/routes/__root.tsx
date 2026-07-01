@@ -70,9 +70,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "Automate emails, meeting notes, tasks, research and workplace Q&A. Less admin. More impact." },
       { name: "author", content: "WorkFlow AI" },
       { property: "og:title", content: "WorkFlow AI — Your Intelligent Workplace Assistant" },
-      { property: "og:description", content: "Automate emails, meeting notes, tasks, research and workplace Q&A." },
+      { property: "og:description", content: "Automate emails, meeting notes, tasks, research and workplace Q&A. Less admin. More impact." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "WorkFlow AI — Your Intelligent Workplace Assistant" },
+      { name: "twitter:description", content: "Automate emails, meeting notes, tasks, research and workplace Q&A. Less admin. More impact." },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

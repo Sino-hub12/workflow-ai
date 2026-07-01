@@ -69,7 +69,7 @@ export const summarizeMeeting = createServerFn({ method: "POST" })
     return { id: row?.id, summary: text };
   });
 
-const ResearchInput = z.object({ query: z.string().min(2) });
+const ResearchInput = z.object({ query: z.string().min(2).max(2000) });
 
 export const runResearch = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

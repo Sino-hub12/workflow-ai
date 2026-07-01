@@ -12,10 +12,10 @@ function getModel() {
 }
 
 const EmailInput = z.object({
-  purpose: z.string().min(1),
+  purpose: z.string().min(1).max(2000),
   tone: z.enum(["professional", "friendly", "persuasive", "apologetic", "confident", "formal"]),
-  recipient: z.string().optional().default(""),
-  details: z.string().optional().default(""),
+  recipient: z.string().max(200).optional().default(""),
+  details: z.string().max(5000).optional().default(""),
 });
 
 export const generateEmail = createServerFn({ method: "POST" })

@@ -104,10 +104,18 @@ function AppShell() {
               <img src={logo} alt="" width={28} height={28} />
               <span className="text-sm font-bold">WorkFlow AI</span>
             </Link>
-            <Button variant="ghost" size="icon" onClick={() => setMobileOpen((v) => !v)} aria-label="Menu">
-              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
+            <div className="flex items-center gap-2">
+              <NotificationsBell />
+              <Button variant="ghost" size="icon" onClick={() => setMobileOpen((v) => !v)} aria-label="Menu">
+                {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
           </header>
+
+          <div className="sticky top-0 z-20 hidden items-center justify-end gap-2 border-b bg-background/70 px-6 py-2 backdrop-blur md:flex">
+            <NotificationsBell />
+          </div>
+
 
           {mobileOpen && (
             <div className="border-b bg-sidebar p-3 md:hidden">

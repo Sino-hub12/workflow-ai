@@ -91,7 +91,7 @@ export const runResearch = createServerFn({ method: "POST" })
   });
 
 const PlannerInput = z.object({
-  tasks: z.array(z.object({ id: z.string(), title: z.string(), priority: z.string(), done: z.boolean() })),
+  tasks: z.array(z.object({ id: z.string().max(100), title: z.string().max(500), priority: z.string().max(50), done: z.boolean() })).max(100),
 });
 
 export const planTasks = createServerFn({ method: "POST" })

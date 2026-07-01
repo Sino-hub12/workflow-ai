@@ -120,3 +120,44 @@ export const createThread = createServerFn({ method: "POST" })
     if (error || !data) throw new Error(error?.message ?? "Failed to create thread");
     return { id: data.id };
   });
+
+export const generateWeeklyReport = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const [tasksRes, emailsRes, meetingsRes, researchRes] = await Promise.all([
+      context.supabase.from("tasks").select("title, priority, done, updated_at").gte("updated_at", since),
+      context.supabase.from("emails").select("purpose, tone, created_at").gte("created_at", since),
+      context.supabase.from("meeting_notes").select("title, created_at").gte("created_at", since),
+      context.supabase.from("research_reports").select("query, created_at").gte("created_at", since),
+    ]);
+    const tasks = tasksRes.data ?? [];
+    const completed = tasks.filter((t) => t.done);
+    const emails = emailsRes.data ?? [];
+    const meetings = meetingsRes.data ?? [];
+    const research = researchRes.data ?? [];
+
+    const stats = {
+      completedTasks: completed.length,
+      pendingTasks: tasks.length - completed.length,
+      emails: emails.length,
+      meetings: meetings.length,
+      research: research.length,
+    };
+
+    const prompt = `Weekly activity:
+- Completed tasks (${completed.length}): ${completed.map((t) => `${t.title} [${t.priority}]`).join("; ") || "none"}
+- Still pending: ${stats.pendingTasks}
+- Emails drafted: ${emails.length}${emails.length ? ` (${emails.slice(0, 5).map((e) => e.purpose).join("; ")})` : ""}
+- Meetings summarised: ${meetings.length}${meetings.length ? ` (${meetings.slice(0, 5).map((m) => m.title).join("; ")})` : ""}
+- Research reports: ${research.length}${research.length ? ` (${research.slice(0, 5).map((r) => r.query).join("; ")})` : ""}`;
+
+    const { text } = await generateText({
+      model: getModel(),
+      system:
+        "You write short, upbeat weekly recap reports for busy professionals. Use markdown with these sections: ## 🎉 This week's wins (celebrate the numbers with warmth), ## Highlights (2-4 concrete bullets referencing actual items), ## Momentum (1-2 sentences about the trend), ## Focus for next week (2-3 actionable suggestions). Keep it under 250 words and motivational — never scolding.",
+      prompt,
+    });
+
+    return { report: text, stats };
+  });

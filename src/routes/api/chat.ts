@@ -42,10 +42,13 @@ export const Route = createFileRoute("/api/chat")({
         const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
         if (!token) return new Response("Unauthorized", { status: 401 });
 
-        const { messages, threadId } = (await request.json()) as Body;
-        if (!Array.isArray(messages) || !threadId) {
+        let parsed;
+        try {
+          parsed = BodySchema.parse(await request.json());
+        } catch {
           return new Response("Bad request", { status: 400 });
         }
+        const { messages, threadId } = parsed as { messages: UIMessage[]; threadId: string };
 
         const supabase = createClient<Database>(
           process.env.SUPABASE_URL!,

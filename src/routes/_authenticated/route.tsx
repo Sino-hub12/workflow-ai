@@ -1,11 +1,12 @@
 import { createFileRoute, Outlet, redirect, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, Mail, FileText, ListChecks, Search, Bot, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, Mail, FileText, ListChecks, Search, Bot, LogOut, Menu, X, CalendarDays, BarChart3 } from "lucide-react";
 import logo from "@/assets/workflow-logo.png";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { NotificationsBell } from "@/components/notifications-bell";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -22,8 +23,10 @@ const nav = [
   { to: "/email", label: "Email", icon: Mail },
   { to: "/meetings", label: "Meetings", icon: FileText },
   { to: "/planner", label: "Planner", icon: ListChecks },
+  { to: "/calendar", label: "Calendar", icon: CalendarDays },
   { to: "/research", label: "Research", icon: Search },
   { to: "/chat", label: "AI Chat", icon: Bot },
+  { to: "/reports", label: "Weekly Report", icon: BarChart3 },
 ] as const;
 
 function AppShell() {

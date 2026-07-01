@@ -1,11 +1,12 @@
 import { createFileRoute, Outlet, redirect, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, Mail, FileText, ListChecks, Search, Bot, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, Mail, FileText, ListChecks, Search, Bot, LogOut, Menu, X, CalendarDays, BarChart3 } from "lucide-react";
 import logo from "@/assets/workflow-logo.png";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { NotificationsBell } from "@/components/notifications-bell";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -22,8 +23,10 @@ const nav = [
   { to: "/email", label: "Email", icon: Mail },
   { to: "/meetings", label: "Meetings", icon: FileText },
   { to: "/planner", label: "Planner", icon: ListChecks },
+  { to: "/calendar", label: "Calendar", icon: CalendarDays },
   { to: "/research", label: "Research", icon: Search },
   { to: "/chat", label: "AI Chat", icon: Bot },
+  { to: "/reports", label: "Weekly Report", icon: BarChart3 },
 ] as const;
 
 function AppShell() {
@@ -101,10 +104,18 @@ function AppShell() {
               <img src={logo} alt="" width={28} height={28} />
               <span className="text-sm font-bold">WorkFlow AI</span>
             </Link>
-            <Button variant="ghost" size="icon" onClick={() => setMobileOpen((v) => !v)} aria-label="Menu">
-              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
+            <div className="flex items-center gap-2">
+              <NotificationsBell />
+              <Button variant="ghost" size="icon" onClick={() => setMobileOpen((v) => !v)} aria-label="Menu">
+                {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
           </header>
+
+          <div className="sticky top-0 z-20 hidden items-center justify-end gap-2 border-b bg-background/70 px-6 py-2 backdrop-blur md:flex">
+            <NotificationsBell />
+          </div>
+
 
           {mobileOpen && (
             <div className="border-b bg-sidebar p-3 md:hidden">

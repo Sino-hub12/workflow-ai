@@ -41,8 +41,8 @@ export const generateEmail = createServerFn({ method: "POST" })
   });
 
 const MeetingInput = z.object({
-  title: z.string().optional().default("Untitled meeting"),
-  transcript: z.string().min(10),
+  title: z.string().max(200).optional().default("Untitled meeting"),
+  transcript: z.string().min(10).max(50_000),
 });
 
 export const summarizeMeeting = createServerFn({ method: "POST" })

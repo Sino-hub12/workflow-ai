@@ -80,7 +80,7 @@ export const Route = createFileRoute("/api/chat")({
                   thread_id: threadId,
                   user_id: userId,
                   role: "user",
-                  parts: prev.parts as unknown,
+                  parts: prev.parts,
                 });
               }
               if (last && last.role === "assistant") {
@@ -88,10 +88,13 @@ export const Route = createFileRoute("/api/chat")({
                   thread_id: threadId,
                   user_id: userId,
                   role: "assistant",
-                  parts: last.parts as unknown,
+                  parts: last.parts,
                 });
               }
-              if (rows.length) await supabase.from("chat_messages").insert(rows);
+              if (rows.length) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                await supabase.from("chat_messages").insert(rows as any);
+              }
 
               // set thread title from first user message if still default
               if (thread.title === "New chat" && prev && prev.role === "user") {

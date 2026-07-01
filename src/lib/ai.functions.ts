@@ -12,10 +12,10 @@ function getModel() {
 }
 
 const EmailInput = z.object({
-  purpose: z.string().min(1),
+  purpose: z.string().min(1).max(2000),
   tone: z.enum(["professional", "friendly", "persuasive", "apologetic", "confident", "formal"]),
-  recipient: z.string().optional().default(""),
-  details: z.string().optional().default(""),
+  recipient: z.string().max(200).optional().default(""),
+  details: z.string().max(5000).optional().default(""),
 });
 
 export const generateEmail = createServerFn({ method: "POST" })
@@ -41,8 +41,8 @@ export const generateEmail = createServerFn({ method: "POST" })
   });
 
 const MeetingInput = z.object({
-  title: z.string().optional().default("Untitled meeting"),
-  transcript: z.string().min(10),
+  title: z.string().max(200).optional().default("Untitled meeting"),
+  transcript: z.string().min(10).max(50_000),
 });
 
 export const summarizeMeeting = createServerFn({ method: "POST" })
@@ -69,7 +69,7 @@ export const summarizeMeeting = createServerFn({ method: "POST" })
     return { id: row?.id, summary: text };
   });
 
-const ResearchInput = z.object({ query: z.string().min(2) });
+const ResearchInput = z.object({ query: z.string().min(2).max(2000) });
 
 export const runResearch = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -91,7 +91,7 @@ export const runResearch = createServerFn({ method: "POST" })
   });
 
 const PlannerInput = z.object({
-  tasks: z.array(z.object({ id: z.string(), title: z.string(), priority: z.string(), done: z.boolean() })),
+  tasks: z.array(z.object({ id: z.string().max(100), title: z.string().max(500), priority: z.string().max(50), done: z.boolean() })).max(100),
 });
 
 export const planTasks = createServerFn({ method: "POST" })

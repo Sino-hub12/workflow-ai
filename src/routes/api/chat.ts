@@ -1,10 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { createClient } from "@supabase/supabase-js";
+import { z } from "zod";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 import type { Database } from "@/integrations/supabase/types";
 
-type Body = { messages?: UIMessage[]; threadId?: string };
+const MessagePartSchema = z.object({
+  type: z.string().max(50),
+  text: z.string().max(20_000).optional(),
+}).passthrough();
+
+const MessageSchema = z.object({
+  id: z.string().max(200).optional(),
+  role: z.enum(["user", "assistant", "system"]),
+  parts: z.array(MessagePartSchema).max(50),
+}).passthrough();
+
+const BodySchema = z.object({
+  threadId: z.string().uuid(),
+  messages: z.array(MessageSchema).max(100),
+});
 
 const SYSTEM = `You are WorkFlow AI, an Intelligent Workplace Assistant.
 You help employees with:
@@ -27,10 +42,13 @@ export const Route = createFileRoute("/api/chat")({
         const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
         if (!token) return new Response("Unauthorized", { status: 401 });
 
-        const { messages, threadId } = (await request.json()) as Body;
-        if (!Array.isArray(messages) || !threadId) {
+        let parsed;
+        try {
+          parsed = BodySchema.parse(await request.json());
+        } catch {
           return new Response("Bad request", { status: 400 });
         }
+        const { messages, threadId } = parsed as { messages: UIMessage[]; threadId: string };
 
         const supabase = createClient<Database>(
           process.env.SUPABASE_URL!,

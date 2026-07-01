@@ -98,7 +98,9 @@ function ChatThread() {
           ) : (
             messages.map((m) => (
               <Message key={m.id} from={m.role}>
-                <MessageContent variant={m.role === "user" ? "contained" : "flat"}>
+                <MessageContent
+                  className={m.role === "assistant" ? "bg-transparent p-0 text-foreground" : undefined}
+                >
                   {m.parts.map((p, i) =>
                     p.type === "text" ? (
                       m.role === "assistant" ? (
@@ -114,8 +116,11 @@ function ChatThread() {
           )}
           {status === "submitted" && (
             <Message from="assistant">
-              <MessageContent variant="flat">
-                <Shimmer><span className="inline-flex items-center gap-2"><Bot className="h-4 w-4" />Thinking…</span></Shimmer>
+              <MessageContent className="bg-transparent p-0 text-foreground">
+                <span className="inline-flex items-center gap-2">
+                  <Bot className="h-4 w-4" />
+                  <Shimmer>Thinking…</Shimmer>
+                </span>
               </MessageContent>
             </Message>
           )}
